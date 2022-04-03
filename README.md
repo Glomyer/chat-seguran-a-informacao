@@ -1,1 +1,1 @@
-# chat-seguran-a-informacao
+# chat-seguranca-informacao
