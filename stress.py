@@ -2,6 +2,7 @@ import socket
 import random
 from threading import Thread
 from datetime import datetime
+import time
 from common_classes import ChatMessage
 from colorama import Fore, init, Back
 import pickle
@@ -39,14 +40,19 @@ sk = socket.socket()
 print(f"[*] Conectando em {SERVER_HOST}:{SERVER_PORT}...")
 print(f"[*] Conectando em {SERVER_HOST}:{SERVER_PORT_KEY}...")
 # connect to the server
-s.connect((SERVER_HOST, SERVER_PORT))
-sk.connect((SERVER_HOST, SERVER_PORT_KEY))
+
 print("[+] Conectado.")
 # prompt the client for a name
 name = input("Insira seu nome: ")
 
 def listen_for_messages():
     while True:
+        s.connect((SERVER_HOST, SERVER_PORT))
+        sk.connect((SERVER_HOST, SERVER_PORT_KEY))
+
+
+
+
         loaded_message = pickle.loads(s.recv(1024))
         key = loaded_message.key
         message = loaded_message.message
@@ -55,6 +61,8 @@ def listen_for_messages():
         decripted_message = decripted_message.replace(separator_token, ": ")
 
         print("\n" + decripted_message)
+        s.close()
+        sk.close()
 
 # make a thread that listens for messages to this client & print them
 t = Thread(target=listen_for_messages)
@@ -66,13 +74,14 @@ while True:
     foreign_public_key = pickle.loads(sk.recv(1024))
     # print(foreign_public_key)
     # print(client_key)
+    i = 0
     while True:
+      try:
         # input message we want to send to the server
-        to_send =  input()
-        if to_send.lower() == 'q':
-            break
-        if to_send == "/?":
-            print(user_list)
+        to_send =  f"hackeado {i}!!!"
+        i += 1
+        print(to_send)
+        time.sleep(0.001)
 
         date_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         message = f"{client_color}[{date_now}] {name}{separator_token}{to_send}{Fore.RESET}"
@@ -82,6 +91,8 @@ while True:
         encrypted_msg = send_box.encrypt(res)
         chat_msg = ChatMessage(encrypted_msg, client_public_key)
         s.send(pickle.dumps(chat_msg))
+      except Exception as e:
+        print(e)
 
 # close the socket
 s.close()

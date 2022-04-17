@@ -49,7 +49,6 @@ def listen_for_client(cs):
 
         else:
             for client_socket in client_sockets:
-                
                 new_message = copy.deepcopy(loaded_message)
                 key = new_message.key
                 message = new_message.message
@@ -61,12 +60,17 @@ def listen_for_client(cs):
             del(loaded_message)
 
 while True:
-    client_socket_key, client_address_key = sk.accept()
-    client_socket, client_address = s.accept()
-    client_public_key = pickle.loads(client_socket_key.recv(1024))
-    client_socket_key.send(pickle.dumps(server_public_key))
-    #print(f"[+] {client_address} conectou.\nChave: {client_public_key}\n")
-    client_sockets.add((client_socket, client_public_key))
+    try: 
+        client_socket_key, client_address_key = sk.accept()
+        client_socket, client_address = s.accept()
+        client_public_key = pickle.loads(client_socket_key.recv(1024))
+        client_socket_key.send(pickle.dumps(server_public_key))
+        print(f"[+] {client_address} conectou.\nChave: {client_public_key}\n")
+        client_sockets.add((client_socket, client_public_key))
+    except:
+        print("erro")
+    
+
     t = Thread(target=listen_for_client, args=(client_socket,))
     t.daemon = True
     t.start()
