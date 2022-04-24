@@ -1,5 +1,7 @@
 import socket
 import pickle
+import sys
+import traceback
 from common_classes import ChatMessage
 import copy
 from threading import Thread
@@ -26,8 +28,8 @@ sk.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind((SERVER_HOST, SERVER_PORT))
 sk.bind((SERVER_HOST, SERVER_PORT_KEY))
 
-sk.listen(12)
-s.listen(12)
+sk.listen(2)
+s.listen(2)
 print(f"[*] Listening as {SERVER_HOST}:{SERVER_PORT}")
 print(f"[*] Listening as {SERVER_HOST}:{SERVER_PORT_KEY}")
 
@@ -46,6 +48,8 @@ def listen_for_client(cs):
         except Exception as e:
             print(f"[!] Error: {e}")
             client_sockets.remove(cs)
+            print(sys.exc_info())
+            exit(-1)
 
         else:
             for client_socket in client_sockets:
@@ -67,8 +71,10 @@ while True:
         client_socket_key.send(pickle.dumps(server_public_key))
         print(f"[+] {client_address} conectou.\nChave: {client_public_key}\n")
         client_sockets.add((client_socket, client_public_key))
-    except:
-        print("erro")
+    except Exception as e:
+        print(f"[!] Error: {e}")
+        print(sys.exc_info())
+        exit(-1)
     
 
     t = Thread(target=listen_for_client, args=(client_socket,))

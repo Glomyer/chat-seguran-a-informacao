@@ -17,4 +17,3 @@ s.connect((SERVER_HOST, SERVER_PORT))
 sk.connect((SERVER_HOST, SERVER_PORT_KEY))
 print("[+] Conectado.")
 # prompt the client for a name
-name = input("Insira seu nome: ")

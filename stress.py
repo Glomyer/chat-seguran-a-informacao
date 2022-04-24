@@ -50,9 +50,6 @@ def listen_for_messages():
         s.connect((SERVER_HOST, SERVER_PORT))
         sk.connect((SERVER_HOST, SERVER_PORT_KEY))
 
-
-
-
         loaded_message = pickle.loads(s.recv(1024))
         key = loaded_message.key
         message = loaded_message.message
