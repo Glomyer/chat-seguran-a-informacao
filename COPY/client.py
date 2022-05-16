@@ -1,8 +1,8 @@
+from asyncio.windows_events import NULL
 import socket
 import random
 from threading import Thread
 from datetime import datetime
-from common_classes import ChatMessage
 from colorama import Fore, init, Back
 import pickle
 
@@ -15,8 +15,7 @@ init()
 colors = [Fore.BLUE, Fore.CYAN, Fore.GREEN, Fore.LIGHTBLACK_EX, 
     Fore.LIGHTBLUE_EX, Fore.LIGHTCYAN_EX, Fore.LIGHTGREEN_EX, 
     Fore.LIGHTMAGENTA_EX, Fore.LIGHTRED_EX, Fore.LIGHTWHITE_EX, 
-    Fore.LIGHTYELLOW_EX, Fore.MAGENTA, Fore.RED, Fore.WHITE, Fore.YELLOW
-]
+    Fore.LIGHTYELLOW_EX, Fore.MAGENTA, Fore.RED, Fore.WHITE, Fore.YELLOW]
 
 # choose a random color for the client
 client_color = random.choice(colors)
@@ -45,43 +44,56 @@ print("[+] Conectado.")
 # prompt the client for a name
 name = input("Insira seu nome: ")
 
+
+def fetch_foreign_key():
+    global foreign_public_key
+    try:
+        sk.send()
+        foreign_public_key = pickle.loads(sk.recv(1024))
+        print("Received Foreign key")
+    except Exception as e:
+        print(f"[!] Error: {e}")
+
 def listen_for_messages():
     while True:
-        loaded_message = pickle.loads(s.recv(1024))
-        key = loaded_message.key
-        message = loaded_message.message
-        receive_box = Box(client_key, key)
-        decripted_message = receive_box.decrypt(message).decode()
-        decripted_message = decripted_message.replace(separator_token, ": ")
+        try:
+            message = pickle.loads(s.recv(1024))
+            receive_box = Box(client_key, foreign_public_key)
+            decripted_message = receive_box.decrypt(message).decode()
+            decripted_message = decripted_message.replace(separator_token, ": ")
 
-        print("\n" + decripted_message)
+            print("\n" + decripted_message)
+
+        except Exception as e:
+            print(f"[!] Error: {e}")
 
 # make a thread that listens for messages to this client & print them
-t = Thread(target=listen_for_messages)
-t.daemon = True
-t.start()
+t1 = Thread(target=listen_for_messages)
+t1.daemon = True
+t1.start()
+
+# t2 = Thread(target=listen_for_foreign_keys)
+# t2.daemon = True
+# t2.start()
 
 while True:
+
     sk.sendall(pickle.dumps(client_public_key))
-    foreign_public_key = pickle.loads(sk.recv(1024))
-    # print(foreign_public_key)
-    # print(client_key)
+    
     while True:
-        # input message we want to send to the server
         to_send =  input()
+
         if to_send.lower() == 'q':
             break
-        if to_send == "/?":
-            print(user_list)
 
-        date_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        message = f"{client_color}[{date_now}] {name}{separator_token}{to_send}{Fore.RESET}"
-        res = bytes(message, 'utf-8')
-
-        send_box = Box(client_key, foreign_public_key)
-        encrypted_msg = send_box.encrypt(res)
-        chat_msg = ChatMessage(encrypted_msg, client_public_key)
-        s.send(pickle.dumps(chat_msg))
+        else:
+            fetch_foreign_key()
+            date_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            message = f"{client_color}[{date_now}] {name}{separator_token}{to_send}{Fore.RESET}"
+            res = bytes(message, 'utf-8')
+            send_box = Box(client_key, foreign_public_key)
+            encrypted_msg = send_box.encrypt(res)
+            s.send(pickle.dumps(encrypted_msg))
 
 # close the socket
 s.close()
