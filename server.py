@@ -24,7 +24,7 @@ server.bind(ADDRESS)
 # function to start the connection
 def startChat():
    
-    print("server is working on " + SERVER)
+    print("Servidor funcionando em " + SERVER)
      
     # listening for connections
     server.listen()
@@ -46,11 +46,11 @@ def startChat():
         names.append(name)
         clients.append(conn)
          
-        print(f"Name is :{name}")
+        print(f"Nome: {name}")
          
         # broadcast message
-        broadcastMessage(f"{name} has joined the chat!".encode(FORMAT))
-        conn.send('Connection successful!'.encode(FORMAT))
+        broadcastMessage(f"{name} está no chat!".encode(FORMAT))
+        conn.send('Conexão bem sucedida!'.encode(FORMAT))
          
         # Start the handling thread
         thread = threading.Thread(target = handle, args = (conn, addr))
@@ -58,13 +58,13 @@ def startChat():
          
         # no. of clients connected
         # to the server
-        print(f"active connections {threading.active_count()-1}")
+        print(f"conexões ativas {threading.active_count()-1}")
  
 # method to handle the
 # incoming messages
 def handle(conn, addr):
    
-    print(f"new connection {addr}")
+    print(f"Nova conexão: {addr}")
     connected = True
      
     while connected:

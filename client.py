@@ -29,7 +29,7 @@ class GUI:
 							height = 300)
 
 		self.pls = Label(self.login,
-					text = "Please login to continue",
+					text = "Faça login para continuar",
 					justify = CENTER,
 					font = "Helvetica 14 bold")
 		
@@ -38,7 +38,7 @@ class GUI:
 					rely = 0.07)
 
 		self.labelName = Label(self.login,
-							text = "Name: ",
+							text = "Nome: ",
 							font = "Helvetica 12")
 		
 		self.labelName.place(relheight = 0.2,
@@ -56,7 +56,7 @@ class GUI:
 		self.entryName.focus()
 
 		self.go = Button(self.login,
-						text = "CONTINUE",
+						text = "CONTINUAR",
 						font = "Helvetica 14 bold",
 						command = lambda: self.goAhead(self.entryName.get()))
 		
@@ -75,7 +75,7 @@ class GUI:
 		self.name = name
 		# to show chat window
 		self.Window.deiconify()
-		self.Window.title("CHATROOM")
+		self.Window.title("SALA DE CHAT")
 		self.Window.resizable(width = False,
 							height = False)
 		self.Window.configure(width = 470,
